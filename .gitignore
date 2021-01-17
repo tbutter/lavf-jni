@@ -1,9 +1,15 @@
 .gradle
 /build/
-
+/bin/
+.classpath
+.project
+/.settings/
+/.vscode
+/com_blubb_lavf_LAVFNative
 # Ignore Gradle GUI config
 gradle-app.setting
-
+native/liblavf.so
+src/main/resources/liblavf.so
 # Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
 !gradle-wrapper.jar
 
@@ -12,3 +18,8 @@ gradle-app.setting
 
 # # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
 # gradle/wrapper/gradle-wrapper.properties
+
+# Ignore Gradle build output directory
+build
+
+native/com_blubb_lavf_LAVFNative.h
