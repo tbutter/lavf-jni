@@ -88,3 +88,40 @@ JNIEXPORT void JNICALL Java_com_blubb_lavf_LAVFNative_avcodec_1free_1context(JNI
 
 	avcodec_free_context(&dec_ctx);
 }
+
+jint getIntField(JNIEnv *env, jobject obj, const char *name)
+{
+	jclass cls = (*env)->GetObjectClass(env, obj);
+	jfieldID field = (*env)->GetFieldID(env, cls, name, "I");
+	return (*env)->GetIntField(env, obj, field);
+}
+
+void setIntField(JNIEnv *env, jobject obj, const char *name, jint value)
+{
+	jclass cls = (*env)->GetObjectClass(env, obj);
+	jfieldID field = (*env)->GetFieldID(env, cls, name, "I");
+	(*env)->SetIntField(env, obj, field, value);
+}
+
+JNIEXPORT void JNICALL Java_com_blubb_lavf_LAVFNative_av_1alloc_1image(JNIEnv *env, jobject that, jobject img)
+{
+	jclass cls = (*env)->GetObjectClass(env, img);
+	jint w = getIntField(env, img, "w");
+	jint h = getIntField(env, img, "h");
+	jint pix_fmt = getIntField(env, img, "pix_fmt");
+	uint8_t *video_dst_data[4] = {NULL};
+	int video_dst_linesize[4];
+	int video_dst_bufsize;
+	video_dst_bufsize = av_image_alloc(video_dst_data, video_dst_linesize, w, h, pix_fmt, 1);
+	jobject buf = (*env)->NewDirectByteBuffer(env, video_dst_data[0], video_dst_bufsize);
+	jfieldID bufferid = (*env)->GetFieldID(env, cls, "buffer", "Ljava/nio/ByteBuffer;");
+	(*env)->SetObjectField(env, img, bufferid, buf);
+	setIntField(env, img, "offset0", 0);
+	setIntField(env, img, "offset1", video_dst_data[1] ? video_dst_data[1] - video_dst_data[0] : 0);
+	setIntField(env, img, "offset2", video_dst_data[2] ? video_dst_data[2] - video_dst_data[0] : 0);
+	setIntField(env, img, "offset3", video_dst_data[3] ? video_dst_data[3] - video_dst_data[0] : 0);
+	setIntField(env, img, "linesize0", video_dst_linesize[0]);
+	setIntField(env, img, "linesize1", video_dst_linesize[1]);
+	setIntField(env, img, "linesize2", video_dst_linesize[2]);
+	setIntField(env, img, "linesize3", video_dst_linesize[3]);
+}

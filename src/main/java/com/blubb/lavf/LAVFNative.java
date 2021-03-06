@@ -44,4 +44,6 @@ public class LAVFNative {
 	native String avcodec_name(long codec_ctx);
 
 	native void avcodec_free_context(long codec_ctx);
+
+	native void av_alloc_image(AVImage image);
 }
