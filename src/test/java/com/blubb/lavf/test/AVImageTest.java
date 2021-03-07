@@ -13,7 +13,7 @@ public class AVImageTest {
 		assertEquals(0, img.offset0);
 		assertEquals(65536, img.offset1);
 		assertEquals(81920, img.offset2);
-		assertEquals(0, img.offset3);
+		assertEquals(-1, img.offset3);
 		assertEquals(256, img.linesize0);
 		assertEquals(128, img.linesize1);
 		assertEquals(128, img.linesize2);
