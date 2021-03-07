@@ -27,4 +27,8 @@ public class AVImage {
 		LAVFNative.INSTANCE.av_alloc_image(img);
 		return img;
 	}
+
+	public void copyTo(AVImage imgto) {
+		LAVFNative.INSTANCE.copyImageTo(this, imgto);
+	}
 }

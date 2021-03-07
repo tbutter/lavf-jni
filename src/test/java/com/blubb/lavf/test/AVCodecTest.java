@@ -47,7 +47,7 @@ public class AVCodecTest {
 		AVFormat avformat = new AVFormat("build/ForBiggerFun.mp4");
 		AVCodec codec = AVCodec.fromStream(avformat, 0);
 		AVPacket pkt = AVPacket.allocate();
-		AVImage img = AVImage.allocate(1280, 720, 0);
+		AVImage img = AVImage.allocate(1280, 720, 0); // YUV420
 		AVFrame frame = AVFrame.allocate();
 		assertEquals("3eab55c6cb0fc9d92600ea15adf8633dea3b976e", SHAsum(img.buffer));
 		avformat.readPacket(pkt);
@@ -56,5 +56,9 @@ public class AVCodecTest {
 		assertEquals(0, ret);
 		frame.copyToImage(img);
 		assertEquals("a368ff9a8ce6ed9ece752a6b2007d1c46e9cfd8b", SHAsum(img.buffer));
+		AVImage imgrgba = AVImage.allocate(1280, 720, 26); // RGBA
+		assertEquals("2b875a069ab089575279e58e85346d56d1025713", SHAsum(imgrgba.buffer));
+		img.copyTo(imgrgba);
+		assertEquals("bbe691c2dd42324e64caf7464ecf261ff599dab6", SHAsum(imgrgba.buffer));
 	}
 }

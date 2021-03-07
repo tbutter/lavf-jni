@@ -68,4 +68,6 @@ public class LAVFNative {
 	native int avcodec_receive_frame(long codec_ctx, long frame_ptr);
 
 	native void copy_frame_to_image(long frame_ptr, AVImage image);
+
+	native void copyImageTo(AVImage avImage, AVImage imgto);
 }

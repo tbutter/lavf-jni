@@ -3,6 +3,7 @@
 #include <libavutil/samplefmt.h>
 #include <libavutil/timestamp.h>
 #include <libavformat/avformat.h>
+#include <libswscale/swscale.h>
 
 JNIEXPORT jlong JNICALL Java_com_blubb_lavf_LAVFNative_avformat_1open_1input(JNIEnv *env, jobject obj, jstring filename)
 {
@@ -137,16 +138,17 @@ JNIEXPORT void JNICALL Java_com_blubb_lavf_LAVFNative_av_1alloc_1image(JNIEnv *e
 	jfieldID bufferid = (*env)->GetFieldID(env, cls, "buffer", "Ljava/nio/ByteBuffer;");
 	(*env)->SetObjectField(env, img, bufferid, buf);
 	setIntField(env, img, "offset0", 0);
-	setIntField(env, img, "offset1", video_dst_data[1] ? video_dst_data[1] - video_dst_data[0] : 0);
-	setIntField(env, img, "offset2", video_dst_data[2] ? video_dst_data[2] - video_dst_data[0] : 0);
-	setIntField(env, img, "offset3", video_dst_data[3] ? video_dst_data[3] - video_dst_data[0] : 0);
+	setIntField(env, img, "offset1", video_dst_data[1] ? video_dst_data[1] - video_dst_data[0] : -1);
+	setIntField(env, img, "offset2", video_dst_data[2] ? video_dst_data[2] - video_dst_data[0] : -1);
+	setIntField(env, img, "offset3", video_dst_data[3] ? video_dst_data[3] - video_dst_data[0] : -1);
 	setIntField(env, img, "linesize0", video_dst_linesize[0]);
 	setIntField(env, img, "linesize1", video_dst_linesize[1]);
 	setIntField(env, img, "linesize2", video_dst_linesize[2]);
 	setIntField(env, img, "linesize3", video_dst_linesize[3]);
 }
 
-JNIEXPORT void JNICALL Java_com_blubb_lavf_LAVFNative_copy_1frame_1to_1image(JNIEnv *env, jobject obj, jlong frame_ptr, jobject img) {
+JNIEXPORT void JNICALL Java_com_blubb_lavf_LAVFNative_copy_1frame_1to_1image(JNIEnv *env, jobject obj, jlong frame_ptr, jobject img)
+{
 	AVFrame *frame = (AVFrame *)frame_ptr;
 	jclass cls = (*env)->GetObjectClass(env, img);
 	jint w = getIntField(env, img, "w");
@@ -168,6 +170,53 @@ JNIEXPORT void JNICALL Java_com_blubb_lavf_LAVFNative_copy_1frame_1to_1image(JNI
 	av_image_copy(video_dst_data, video_dst_linesize,
 				  (const uint8_t **)(frame->data), frame->linesize,
 				  pix_fmt, w, h);
+}
+
+JNIEXPORT void JNICALL Java_com_blubb_lavf_LAVFNative_copyImageTo(JNIEnv *env, jobject obj, jobject src, jobject dst)
+{
+	jclass cls = (*env)->GetObjectClass(env, src);
+	jint srcw = getIntField(env, src, "w");
+	jint srch = getIntField(env, src, "h");
+	jint srcpix_fmt = getIntField(env, src, "pix_fmt");
+	jint dstw = getIntField(env, dst, "w");
+	jint dsth = getIntField(env, dst, "h");
+	jint dstpix_fmt = getIntField(env, dst, "pix_fmt");
+	jfieldID bufferid = (*env)->GetFieldID(env, cls, "buffer", "Ljava/nio/ByteBuffer;");
+	jobject srcbuf = (*env)->GetObjectField(env, src, bufferid);
+	jobject dstbuf = (*env)->GetObjectField(env, dst, bufferid);
+	uint8_t *video_src_data[4] = {NULL};
+	uint8_t *bufptr = (*env)->GetDirectBufferAddress(env, srcbuf);
+	jint offset = getIntField(env, src, "offset0");
+	video_src_data[0] = offset >= 0 ? bufptr + offset : 0;
+	offset = getIntField(env, src, "offset1");
+	video_src_data[1] = offset >= 0 ? bufptr + offset : 0;
+	offset = getIntField(env, src, "offset2");
+	video_src_data[2] = offset >= 0 ? bufptr + offset : 0;
+	offset = getIntField(env, src, "offset3");
+	video_src_data[3] = offset >= 0 ? bufptr + offset : 0;
+	int video_src_linesize[4];
+	video_src_linesize[0] = getIntField(env, src, "linesize0");
+	video_src_linesize[1] = getIntField(env, src, "linesize1");
+	video_src_linesize[2] = getIntField(env, src, "linesize2");
+	video_src_linesize[3] = getIntField(env, src, "linesize3");
+	uint8_t *video_dst_data[4] = {NULL};
+	bufptr = (*env)->GetDirectBufferAddress(env, dstbuf);
+	offset = getIntField(env, dst, "offset0");
+	video_dst_data[0] = offset >= 0 ? bufptr + offset : 0;
+	offset = getIntField(env, dst, "offset1");
+	video_dst_data[1] = offset >= 0 ? bufptr + offset : 0;
+	offset = getIntField(env, dst, "offset2");
+	video_dst_data[2] = offset >= 0 ? bufptr + offset : 0;
+	offset = getIntField(env, dst, "offset3");
+	video_dst_data[3] = offset >= 0 ? bufptr + offset : 0;
+	int video_dst_linesize[4];
+	video_dst_linesize[0] = getIntField(env, dst, "linesize0");
+	video_dst_linesize[1] = getIntField(env, dst, "linesize1");
+	video_dst_linesize[2] = getIntField(env, dst, "linesize2");
+	video_dst_linesize[3] = getIntField(env, dst, "linesize3");
+
+	struct SwsContext *convertCtx = sws_getContext(srcw, srch, srcpix_fmt, dstw, dsth, dstpix_fmt, SWS_FAST_BILINEAR, NULL, NULL, NULL);
+	sws_scale(convertCtx, video_src_data, video_src_linesize, 0, srch, video_dst_data, video_dst_linesize);
 }
 
 JNIEXPORT jlong JNICALL Java_com_blubb_lavf_LAVFNative_alloc_1packet(JNIEnv *env, jobject obj)
