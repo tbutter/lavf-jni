@@ -33,6 +33,35 @@ public class AVCodec implements AutoCloseable {
 		return LAVFNative.INSTANCE.avcodec_name(codec_ctx);
 	}
 
+	public int getWidth() {
+		return LAVFNative.INSTANCE.avcodec_ctx_intfield(codec_ctx, 1);
+	}
+
+	public int getHeight() {
+		return LAVFNative.INSTANCE.avcodec_ctx_intfield(codec_ctx, 2);
+	}
+
+	public int getPixFmt() {
+		return LAVFNative.INSTANCE.avcodec_ctx_intfield(codec_ctx, 3);
+	}
+
+	public int getSampleFmt() {
+		return LAVFNative.INSTANCE.avcodec_ctx_intfield(codec_ctx, 4);
+	}
+
+	public int getChannels() {
+		return LAVFNative.INSTANCE.avcodec_ctx_intfield(codec_ctx, 5);
+	}
+
+	public boolean sendPacket(AVPacket p) {
+		return LAVFNative.INSTANCE.avcodec_send_packet(codec_ctx, p.packet_ptr);
+	}
+
+	public int receiveFrame(AVFrame frame) {
+		frame.unref();
+		return LAVFNative.INSTANCE.avcodec_receive_frame(codec_ctx, frame.frame_ptr);
+	}
+
 	public void close() {
 		finalize();
 	}

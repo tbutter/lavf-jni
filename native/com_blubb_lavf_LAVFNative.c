@@ -77,9 +77,29 @@ JNIEXPORT jint JNICALL Java_com_blubb_lavf_LAVFNative_avcodec_1open2(JNIEnv *env
 	return avcodec_open2(dec_ctx, dec, &opts);
 }
 
-JNIEXPORT jstring JNICALL Java_com_blubb_lavf_LAVFNative_avcodec_1name(JNIEnv *env, jobject obj, jlong codec_ctx) {
+JNIEXPORT jstring JNICALL Java_com_blubb_lavf_LAVFNative_avcodec_1name(JNIEnv *env, jobject obj, jlong codec_ctx)
+{
 	AVCodecContext *dec_ctx = (AVCodecContext *)codec_ctx;
 	return (*env)->NewStringUTF(env, dec_ctx->codec->name);
+}
+
+JNIEXPORT jint JNICALL Java_com_blubb_lavf_LAVFNative_avcodec_1ctx_1intfield(JNIEnv *env, jobject obj, jlong codec_ctx, jint field)
+{
+	AVCodecContext *dec_ctx = (AVCodecContext *)codec_ctx;
+	switch (field)
+	{
+	case 1:
+		return dec_ctx->width;
+	case 2:
+		return dec_ctx->height;
+	case 3:
+		return dec_ctx->pix_fmt;
+	case 4:
+		return dec_ctx->sample_fmt;
+	case 5:
+		return dec_ctx->channels;
+	}
+	return 0;
 }
 
 JNIEXPORT void JNICALL Java_com_blubb_lavf_LAVFNative_avcodec_1free_1context(JNIEnv *env, jobject obj, jlong codec_ctx)
@@ -124,4 +144,95 @@ JNIEXPORT void JNICALL Java_com_blubb_lavf_LAVFNative_av_1alloc_1image(JNIEnv *e
 	setIntField(env, img, "linesize1", video_dst_linesize[1]);
 	setIntField(env, img, "linesize2", video_dst_linesize[2]);
 	setIntField(env, img, "linesize3", video_dst_linesize[3]);
+}
+
+JNIEXPORT void JNICALL Java_com_blubb_lavf_LAVFNative_copy_1frame_1to_1image(JNIEnv *env, jobject obj, jlong frame_ptr, jobject img) {
+	AVFrame *frame = (AVFrame *)frame_ptr;
+	jclass cls = (*env)->GetObjectClass(env, img);
+	jint w = getIntField(env, img, "w");
+	jint h = getIntField(env, img, "h");
+	jint pix_fmt = getIntField(env, img, "pix_fmt");
+	jfieldID bufferid = (*env)->GetFieldID(env, cls, "buffer", "Ljava/nio/ByteBuffer;");
+	jobject buf = (*env)->GetObjectField(env, img, bufferid);
+	uint8_t *video_dst_data[4] = {NULL};
+	uint8_t *bufptr = (*env)->GetDirectBufferAddress(env, buf);
+	video_dst_data[0] = bufptr + getIntField(env, img, "offset0");
+	video_dst_data[1] = bufptr + getIntField(env, img, "offset1");
+	video_dst_data[2] = bufptr + getIntField(env, img, "offset2");
+	video_dst_data[3] = bufptr + getIntField(env, img, "offset3");
+	int video_dst_linesize[4];
+	video_dst_linesize[0] = getIntField(env, img, "linesize0");
+	video_dst_linesize[1] = getIntField(env, img, "linesize1");
+	video_dst_linesize[2] = getIntField(env, img, "linesize2");
+	video_dst_linesize[3] = getIntField(env, img, "linesize3");
+	av_image_copy(video_dst_data, video_dst_linesize,
+				  (const uint8_t **)(frame->data), frame->linesize,
+				  pix_fmt, w, h);
+}
+
+JNIEXPORT jlong JNICALL Java_com_blubb_lavf_LAVFNative_alloc_1packet(JNIEnv *env, jobject obj)
+{
+	AVPacket *pkt = av_mallocz(sizeof(AVPacket));
+	av_init_packet(pkt);
+	pkt->data = NULL;
+	pkt->size = 0;
+	return (jlong)pkt;
+}
+
+JNIEXPORT void JNICALL Java_com_blubb_lavf_LAVFNative_free_1packet(JNIEnv *env, jobject obj, jlong packet_ptr)
+{
+	AVPacket *pkt = (AVPacket *)packet_ptr;
+	av_free(pkt);
+}
+
+JNIEXPORT jboolean JNICALL Java_com_blubb_lavf_LAVFNative_av_1read_1frame(JNIEnv *env, jobject obj, jlong lfmt_ctx, jlong packet_ptr)
+{
+	AVPacket *pkt = (AVPacket *)packet_ptr;
+	AVFormatContext *fmt_ctx = (AVFormatContext *)lfmt_ctx;
+	return av_read_frame(fmt_ctx, pkt) >= 0;
+}
+
+JNIEXPORT void JNICALL Java_com_blubb_lavf_LAVFNative_av_1packet_1unref(JNIEnv *env, jobject obj, jlong packet_ptr)
+{
+	AVPacket *pkt = (AVPacket *)packet_ptr;
+	av_packet_unref(pkt);
+}
+
+JNIEXPORT jlong JNICALL Java_com_blubb_lavf_LAVFNative_packet_1getfield(JNIEnv *env, jobject obj, jlong packet_ptr, jint field)
+{
+	AVPacket *pkt = (AVPacket *)packet_ptr;
+	switch (field)
+	{
+	case 1:
+		return pkt->stream_index;
+	case 2:
+		return pkt->pts;
+	}
+	return -1;
+}
+
+JNIEXPORT jlong JNICALL Java_com_blubb_lavf_LAVFNative_alloc_1frame(JNIEnv *env, jobject obj)
+{
+	AVFrame *frame = av_frame_alloc();
+	return (jlong)frame;
+}
+
+JNIEXPORT void JNICALL Java_com_blubb_lavf_LAVFNative_av_1frame_1unref(JNIEnv *env, jobject obj, jlong frame_ptr)
+{
+	AVFrame *frame = (AVFrame *)frame_ptr;
+	av_frame_unref(frame);
+}
+
+JNIEXPORT jboolean JNICALL Java_com_blubb_lavf_LAVFNative_avcodec_1send_1packet(JNIEnv *env, jobject obj, jlong codec_ptr, jlong packet_ptr)
+{
+	AVPacket *pkt = (AVPacket *)packet_ptr;
+	AVCodecContext *cctx = (AVCodecContext *)codec_ptr;
+	return avcodec_send_packet(cctx, pkt) >= 0;
+}
+
+JNIEXPORT jint JNICALL Java_com_blubb_lavf_LAVFNative_avcodec_1receive_1frame(JNIEnv *env, jobject obj, jlong codec_ptr, jlong frame_ptr)
+{
+	AVFrame *frame = (AVFrame *)frame_ptr;
+	AVCodecContext *cctx = (AVCodecContext *)codec_ptr;
+	return avcodec_receive_frame(cctx, frame);
 }
