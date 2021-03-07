@@ -41,7 +41,33 @@ public class LAVFNative {
 	
 	native int avcodec_open2(long codec_ctx, long codec);
 
+	native int avcodec_ctx_intfield(long codec_ctx, int field);
+
 	native String avcodec_name(long codec_ctx);
 
 	native void avcodec_free_context(long codec_ctx);
+
+	native void av_alloc_image(AVImage image);
+
+	native long alloc_packet();
+
+	native void free_packet(long packet_ptr);
+
+	native boolean av_read_frame(long fmt_ctx, long packet_ptr);
+
+	native void av_packet_unref(long packet_ptr);
+
+	native long packet_getfield(long packet_ptr, int i);
+
+	native long alloc_frame();
+
+	native void av_frame_unref(long frame_ptr);
+
+	native boolean avcodec_send_packet(long codec_ctx, long packet_ptr);
+
+	native int avcodec_receive_frame(long codec_ctx, long frame_ptr);
+
+	native void copy_frame_to_image(long frame_ptr, AVImage image);
+
+	native void copyImageTo(AVImage avImage, AVImage imgto);
 }

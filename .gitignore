@@ -23,3 +23,4 @@ src/main/resources/liblavf.so
 build
 
 native/com_blubb_lavf_LAVFNative.h
+.DS_Store
