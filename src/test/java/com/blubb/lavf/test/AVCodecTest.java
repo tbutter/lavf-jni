@@ -49,6 +49,9 @@ public class AVCodecTest {
 		AVPacket pkt = AVPacket.allocate();
 		AVImage img = AVImage.allocate(1280, 720, 0); // YUV420
 		AVFrame frame = AVFrame.allocate();
+		for (int i = 0; i < img.buffer.capacity(); i++) {
+			assertEquals(img.buffer.get(i), 0);
+		}
 		assertEquals("3eab55c6cb0fc9d92600ea15adf8633dea3b976e", SHAsum(img.buffer));
 		avformat.readPacket(pkt);
 		codec.sendPacket(pkt);
