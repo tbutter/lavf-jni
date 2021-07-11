@@ -55,6 +55,8 @@ public class LAVFNative {
 
 	native boolean av_read_frame(long fmt_ctx, long packet_ptr);
 
+	native boolean av_seek_frame(long fmt_ctx, long ts);
+
 	native void av_packet_unref(long packet_ptr);
 
 	native long packet_getfield(long packet_ptr, int i);

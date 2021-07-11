@@ -241,6 +241,12 @@ JNIEXPORT jboolean JNICALL Java_com_blubb_lavf_LAVFNative_av_1read_1frame(JNIEnv
 	return av_read_frame(fmt_ctx, pkt) >= 0;
 }
 
+JNIEXPORT jboolean JNICALL Java_com_blubb_lavf_LAVFNative_av_1seek_1frame(JNIEnv * env, jobject obj, jlong lfmt_ctx, jlong ts)
+{
+	AVFormatContext *fmt_ctx = (AVFormatContext *)lfmt_ctx;
+	return av_seek_frame(fmt_ctx, -1, ts, 0) >= 0;
+}
+
 JNIEXPORT void JNICALL Java_com_blubb_lavf_LAVFNative_av_1packet_1unref(JNIEnv *env, jobject obj, jlong packet_ptr)
 {
 	AVPacket *pkt = (AVPacket *)packet_ptr;
