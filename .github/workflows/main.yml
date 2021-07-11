@@ -36,6 +36,11 @@ jobs:
 
       - name: Run build
         run: ./gradlew build --stacktrace
+
+      - name: publish maven
+        run: ./gradlew publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
       - uses: actions/upload-artifact@v2
         if: ${{ always() }}
