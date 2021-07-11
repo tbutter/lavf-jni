@@ -26,6 +26,13 @@ JNIEXPORT jlong JNICALL Java_com_blubb_lavf_LAVFNative_avformat_1open_1input(JNI
 	return (jlong)fmt_ctx;
 }
 
+JNIEXPORT jlong JNICALL Java_com_blubb_lavf_LAVFNative_streamts_1to_1basets(JNIEnv *env, jobject obj, jlong ctx, jlong sts)
+{
+	AVFormatContext *fmt_ctx = (AVFormatContext *)ctx;
+	AVRational time_base = fmt_ctx->streams[0]->time_base;
+	return av_rescale_q(sts, time_base, AV_TIME_BASE_Q);
+}
+
 JNIEXPORT void JNICALL Java_com_blubb_lavf_LAVFNative_avformat_1close_1input(JNIEnv *env, jobject obj, jlong ctx)
 {
 	AVFormatContext *fmt_ctx = (AVFormatContext *)ctx;
@@ -244,7 +251,7 @@ JNIEXPORT jboolean JNICALL Java_com_blubb_lavf_LAVFNative_av_1read_1frame(JNIEnv
 JNIEXPORT jboolean JNICALL Java_com_blubb_lavf_LAVFNative_av_1seek_1frame(JNIEnv * env, jobject obj, jlong lfmt_ctx, jlong ts)
 {
 	AVFormatContext *fmt_ctx = (AVFormatContext *)lfmt_ctx;
-	return av_seek_frame(fmt_ctx, -1, ts, 0) >= 0;
+	return av_seek_frame(fmt_ctx, -1, ts, AVSEEK_FLAG_BACKWARD) >= 0;
 }
 
 JNIEXPORT void JNICALL Java_com_blubb_lavf_LAVFNative_av_1packet_1unref(JNIEnv *env, jobject obj, jlong packet_ptr)

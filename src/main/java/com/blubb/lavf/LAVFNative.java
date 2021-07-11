@@ -72,4 +72,6 @@ public class LAVFNative {
 	native void copy_frame_to_image(long frame_ptr, AVImage image);
 
 	native void copyImageTo(AVImage avImage, AVImage imgto);
+
+	native long streamts_to_basets(long fmt_ctx, long ts);
 }

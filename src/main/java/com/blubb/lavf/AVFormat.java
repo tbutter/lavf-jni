@@ -24,6 +24,10 @@ public class AVFormat implements AutoCloseable {
 		return LAVFNative.INSTANCE.av_seek_frame(fmt_ctx, ts);
 	}
 
+	public long streamts_to_basets(long ts) {
+		// converts stream ts to ts with base 1_000_000
+		return LAVFNative.INSTANCE.streamts_to_basets(fmt_ctx, ts);
+	}
 
 	public void close() {
 		finalize();
