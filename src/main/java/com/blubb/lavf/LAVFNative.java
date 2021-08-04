@@ -29,6 +29,8 @@ public class LAVFNative {
 	// calls avformat_open_input and avformat_fin_stream_info
 	native long avformat_open_input(String filename);
 
+	native long avformat_allocate(String format);
+
 	native void avformat_close_input(long fmt_ctx);
 
 	native int av_find_best_stream(long fmt_ctx, int type);
@@ -74,4 +76,6 @@ public class LAVFNative {
 	native void copyImageTo(AVImage avImage, AVImage imgto);
 
 	native long streamts_to_basets(long fmt_ctx, long ts);
+
+	native int av_add_video_stream(long fmt_ctx, int codecId, int width, int height, int bitrate, int frametime, int pixfmt);
 }

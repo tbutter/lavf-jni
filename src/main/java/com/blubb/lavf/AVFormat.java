@@ -2,9 +2,24 @@ package com.blubb.lavf;
 
 public class AVFormat implements AutoCloseable {
 	long fmt_ctx;
+	boolean isInput;
 
-	public AVFormat(String filename) {
-		fmt_ctx = LAVFNative.INSTANCE.avformat_open_input(filename);
+	private AVFormat(long fmt_ctx, boolean isInput) {
+		this.fmt_ctx = fmt_ctx;
+		this.isInput = isInput;
+	}
+
+	public static AVFormat openInput(String filename) {
+		return new AVFormat(LAVFNative.INSTANCE.avformat_open_input(filename), true);
+	}
+
+	public static AVFormat allocate(String format) {
+		return new AVFormat(LAVFNative.INSTANCE.avformat_allocate(format), false);
+	}
+
+	public AVStream addVideoStream(int codecId, int width, int height, int bitrate, int frametime, int pixfmt) {
+		return new AVStream(
+				LAVFNative.INSTANCE.av_add_video_stream(fmt_ctx, codecId, width, height, bitrate, frametime, pixfmt));
 	}
 
 	public int bestVideoStream() {
@@ -36,7 +51,7 @@ public class AVFormat implements AutoCloseable {
 	@Override
 	public void finalize() {
 		if(fmt_ctx == 0) return;
-		LAVFNative.INSTANCE.avformat_close_input(fmt_ctx);
+		if(isInput) LAVFNative.INSTANCE.avformat_close_input(fmt_ctx);
 		fmt_ctx = 0;
 	}
 }

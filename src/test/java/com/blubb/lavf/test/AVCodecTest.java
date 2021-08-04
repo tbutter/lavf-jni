@@ -32,7 +32,7 @@ public class AVCodecTest {
 
 	@Test
 	public void testOpen() throws Exception {
-		AVFormat avformat = new AVFormat("build/ForBiggerFun.mp4");
+		AVFormat avformat = AVFormat.openInput("build/ForBiggerFun.mp4");
 		AVCodec codec = AVCodec.fromStream(avformat, 0);
 		assertEquals("h264", codec.getName());
 		assertEquals(1280, codec.getWidth());
@@ -44,7 +44,7 @@ public class AVCodecTest {
 
 	@Test
 	public void testDecode() throws Exception {
-		AVFormat avformat = new AVFormat("build/ForBiggerFun.mp4");
+		AVFormat avformat = AVFormat.openInput("build/ForBiggerFun.mp4");
 		AVCodec codec = AVCodec.fromStream(avformat, 0);
 		AVPacket pkt = AVPacket.allocate();
 		AVImage img = AVImage.allocate(1280, 720, 0); // YUV420

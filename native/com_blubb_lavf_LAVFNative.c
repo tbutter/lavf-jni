@@ -26,6 +26,20 @@ JNIEXPORT jlong JNICALL Java_com_blubb_lavf_LAVFNative_avformat_1open_1input(JNI
 	return (jlong)fmt_ctx;
 }
 
+JNIEXPORT jlong JNICALL Java_com_blubb_lavf_LAVFNative_avformat_1allocate(JNIEnv *env, jobject obj, jstring format)
+{
+	AVFormatContext *fmt_ctx = NULL;
+	AVOutputFormat *fmt;
+
+	const char *formatstr;
+
+	formatstr = (*env)->GetStringUTFChars(env, format, NULL);
+	fmt = av_guess_format(formatstr, NULL, NULL);
+	fmt_ctx = avformat_alloc_context();
+	fmt_ctx->oformat = fmt;
+	return (jlong)fmt_ctx;
+}
+
 JNIEXPORT jlong JNICALL Java_com_blubb_lavf_LAVFNative_streamts_1to_1basets(JNIEnv *env, jobject obj, jlong ctx, jlong sts)
 {
 	AVFormatContext *fmt_ctx = (AVFormatContext *)ctx;
@@ -248,7 +262,7 @@ JNIEXPORT jboolean JNICALL Java_com_blubb_lavf_LAVFNative_av_1read_1frame(JNIEnv
 	return av_read_frame(fmt_ctx, pkt) >= 0;
 }
 
-JNIEXPORT jboolean JNICALL Java_com_blubb_lavf_LAVFNative_av_1seek_1frame(JNIEnv * env, jobject obj, jlong lfmt_ctx, jlong ts)
+JNIEXPORT jboolean JNICALL Java_com_blubb_lavf_LAVFNative_av_1seek_1frame(JNIEnv *env, jobject obj, jlong lfmt_ctx, jlong ts)
 {
 	AVFormatContext *fmt_ctx = (AVFormatContext *)lfmt_ctx;
 	return av_seek_frame(fmt_ctx, -1, ts, AVSEEK_FLAG_BACKWARD) >= 0;
@@ -297,4 +311,35 @@ JNIEXPORT jint JNICALL Java_com_blubb_lavf_LAVFNative_avcodec_1receive_1frame(JN
 	AVFrame *frame = (AVFrame *)frame_ptr;
 	AVCodecContext *cctx = (AVCodecContext *)codec_ptr;
 	return avcodec_receive_frame(cctx, frame);
+}
+
+JNIEXPORT jint JNICALL Java_com_blubb_lavf_LAVFNative_av_1add_1video_1stream(JNIEnv *env, jobject obj, jlong fmt_ctx, jint codecId, jint width, jint height, jint bitrate, jint frametime, jint pixfmt)
+{
+	AVFormatContext *oc = (AVFormatContext *)fmt_ctx;
+	AVCodecContext *c;
+	AVStream *st;
+
+	st = av_new_stream(oc, 0);
+	if (!st)
+	{
+		fprintf(stderr, "Could not alloc stream\n");
+		return 0;
+	}
+
+	c = st->codec;
+	c->codec_id = codecId;
+	c->codec_type = AVMEDIA_TYPE_VIDEO;
+
+	c->bit_rate = bitrate;
+	c->width = width;
+	c->height = height;
+
+	c->time_base.den = AV_TIME_BASE;
+	c->time_base.num = frametime;
+	c->gop_size = 12; /* emit one intra frame every twelve frames at most */
+	c->pix_fmt = pixfmt;
+	/*if (oc->oformat->flags & AVFMT_GLOBALHEADER)
+		c->flags |= CODEC_FLAG_GLOBAL_HEADER;*/
+
+	return (jlong)st;
 }
