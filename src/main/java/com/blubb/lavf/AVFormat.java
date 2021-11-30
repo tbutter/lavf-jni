@@ -14,12 +14,20 @@ public class AVFormat implements AutoCloseable {
 	}
 
 	public static AVFormat allocate(String format) {
-		return new AVFormat(LAVFNative.INSTANCE.avformat_allocate(format), false);
+		AVFormat fmt = new AVFormat(LAVFNative.INSTANCE.avformat_allocate(format), false);
+		if (fmt.fmt_ctx == 0)
+			throw new IllegalArgumentException("unknown format " + format);
+		return fmt;
 	}
 
 	public AVStream addVideoStream(int codecId, int width, int height, int bitrate, int frametime, int pixfmt) {
 		return new AVStream(
 				LAVFNative.INSTANCE.av_add_video_stream(fmt_ctx, codecId, width, height, bitrate, frametime, pixfmt));
+	}
+
+	public boolean openVideoStream(AVStream stream) {
+		LAVFNative.INSTANCE.av_open_video(fmt_ctx, stream.avstream);
+		return false; // FIXME
 	}
 
 	public int bestVideoStream() {
@@ -50,8 +58,10 @@ public class AVFormat implements AutoCloseable {
 
 	@Override
 	public void finalize() {
-		if(fmt_ctx == 0) return;
-		if(isInput) LAVFNative.INSTANCE.avformat_close_input(fmt_ctx);
+		if (fmt_ctx == 0)
+			return;
+		if (isInput)
+			LAVFNative.INSTANCE.avformat_close_input(fmt_ctx);
 		fmt_ctx = 0;
 	}
 }

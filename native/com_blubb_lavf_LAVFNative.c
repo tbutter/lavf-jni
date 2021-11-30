@@ -28,15 +28,13 @@ JNIEXPORT jlong JNICALL Java_com_blubb_lavf_LAVFNative_avformat_1open_1input(JNI
 
 JNIEXPORT jlong JNICALL Java_com_blubb_lavf_LAVFNative_avformat_1allocate(JNIEnv *env, jobject obj, jstring format)
 {
-	AVFormatContext *fmt_ctx = NULL;
-	AVOutputFormat *fmt;
+	AVFormatContext *fmt_ctx;
 
 	const char *formatstr;
+	int ret = 0;
 
 	formatstr = (*env)->GetStringUTFChars(env, format, NULL);
-	fmt = av_guess_format(formatstr, NULL, NULL);
-	fmt_ctx = avformat_alloc_context();
-	fmt_ctx->oformat = fmt;
+	ret = avformat_alloc_output_context2(&fmt_ctx, NULL, formatstr, NULL);
 	return (jlong)fmt_ctx;
 }
 
@@ -319,7 +317,7 @@ JNIEXPORT jint JNICALL Java_com_blubb_lavf_LAVFNative_av_1add_1video_1stream(JNI
 	AVCodecContext *c;
 	AVStream *st;
 
-	st = av_new_stream(oc, 0);
+	st = avformat_new_stream(oc, 0);
 	if (!st)
 	{
 		fprintf(stderr, "Could not alloc stream\n");
@@ -342,4 +340,30 @@ JNIEXPORT jint JNICALL Java_com_blubb_lavf_LAVFNative_av_1add_1video_1stream(JNI
 		c->flags |= CODEC_FLAG_GLOBAL_HEADER;*/
 
 	return (jlong)st;
+}
+
+JNIEXPORT jint JNICALL Java_com_blubb_lavf_LAVFNative_av_1open_1video(JNIEnv *env, jobject obj, jlong fmt_ctx, jlong avstream)
+{
+	int ret;
+	AVStream *st = (AVStream*)avstream;
+	AVFormatContext *fmt  = (AVFormatContext*) fmt_ctx;
+    AVCodecContext *c = st->codec;
+    AVDictionary *opt = NULL;
+	AVDictionary *opt_arg = NULL;
+    av_dict_copy(&opt, opt_arg, 0);
+
+    /* open the codec */
+    ret = avcodec_open2(c, c->codec, &opt);
+    av_dict_free(&opt);
+    if (ret < 0) {
+        fprintf(stderr, "Could not open video codec: %s\n", av_err2str(ret));
+        exit(1);
+    }
+
+    /* copy the stream parameters to the muxer */
+    ret = avcodec_parameters_from_context(st->codecpar, c);
+    if (ret < 0) {
+        fprintf(stderr, "Could not copy the stream parameters\n");
+        exit(1);
+    }
 }

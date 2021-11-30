@@ -2,7 +2,7 @@
 
 # [Choice] Java version: 11, 15
 ARG VARIANT="15"
-FROM mcr.microsoft.com/vscode/devcontainers/java:0-${VARIANT}
+FROM mcr.microsoft.com/vscode/devcontainers/java:0-${VARIANT}-bullseye
 
 # [Option] Install Maven
 ARG INSTALL_MAVEN="false"
