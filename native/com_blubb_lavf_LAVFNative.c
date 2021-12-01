@@ -311,7 +311,7 @@ JNIEXPORT jint JNICALL Java_com_blubb_lavf_LAVFNative_avcodec_1receive_1frame(JN
 	return avcodec_receive_frame(cctx, frame);
 }
 
-JNIEXPORT jint JNICALL Java_com_blubb_lavf_LAVFNative_av_1add_1video_1stream(JNIEnv *env, jobject obj, jlong fmt_ctx, jint codecId, jint width, jint height, jint bitrate, jint frametime, jint pixfmt)
+JNIEXPORT jlong JNICALL Java_com_blubb_lavf_LAVFNative_av_1add_1video_1stream(JNIEnv *env, jobject obj, jlong fmt_ctx, jint codecId, jint width, jint height, jint bitrate, jint frametime, jint pixfmt)
 {
 	AVFormatContext *oc = (AVFormatContext *)fmt_ctx;
 	AVCodecContext *c;
@@ -348,18 +348,22 @@ JNIEXPORT jint JNICALL Java_com_blubb_lavf_LAVFNative_av_1open_1video(JNIEnv *en
 	AVStream *st = (AVStream*)avstream;
 	AVFormatContext *fmt  = (AVFormatContext*) fmt_ctx;
     AVCodecContext *c = st->codec;
+	printf("XXXXXXXCCCXXXXXX3 %x",c);
+	
     AVDictionary *opt = NULL;
 	AVDictionary *opt_arg = NULL;
     av_dict_copy(&opt, opt_arg, 0);
-
+	printf("av_dcit_copy");
     /* open the codec */
-    ret = avcodec_open2(c, c->codec, &opt);
+
+    ret = 0;//avcodec_open2(c, c->codec, &opt);
+	printf("avcodec_open2");
+
     av_dict_free(&opt);
     if (ret < 0) {
         fprintf(stderr, "Could not open video codec: %s\n", av_err2str(ret));
         exit(1);
     }
-
     /* copy the stream parameters to the muxer */
     ret = avcodec_parameters_from_context(st->codecpar, c);
     if (ret < 0) {

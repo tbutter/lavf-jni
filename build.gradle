@@ -54,4 +54,10 @@ task verifyFile(type: Verify, dependsOn: downloadFile) {
     checksum '2ffd447ced3e0a04edcdd3975c4b638f16df2f7f'
 }
 
+task nativeBuild(type: Exec, dependsOn: compileJava) {
+    workingDir './native'
+    commandLine './build.sh'
+}
+
+processResources.dependsOn nativeBuild
 test.dependsOn verifyFile
