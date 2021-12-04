@@ -60,7 +60,7 @@ public class AVCodecTest {
 		AVImage imgrgba = AVImage.allocate(1280, 720, 26); // RGBA
 		assertEquals("2b875a069ab089575279e58e85346d56d1025713", SHAsum(imgrgba.buffer));
 		img.copyTo(imgrgba);
-		assertEquals("9cb7781da2b728618ddc5219371e17f2c307229c", SHAsum(imgrgba.buffer));
+		assertEquals("bbe691c2dd42324e64caf7464ecf261ff599dab6", SHAsum(imgrgba.buffer));
 		avformat.close();
 	}
 
