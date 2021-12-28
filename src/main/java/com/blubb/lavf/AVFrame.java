@@ -16,6 +16,10 @@ public class AVFrame {
 		LAVFNative.INSTANCE.copy_frame_to_image(frame_ptr, image);
 	}
 
+	public AVSamples copyToSamples() {
+		return LAVFNative.INSTANCE.copy_frame_to_samples(frame_ptr);
+	}
+
 	public void unref() {
 		LAVFNative.INSTANCE.av_frame_unref(frame_ptr);
 	}

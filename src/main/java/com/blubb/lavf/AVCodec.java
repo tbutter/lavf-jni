@@ -53,6 +53,10 @@ public class AVCodec implements AutoCloseable {
 		return LAVFNative.INSTANCE.avcodec_ctx_intfield(codec_ctx, 5);
 	}
 
+	public int getSampleRate() {
+		return LAVFNative.INSTANCE.avcodec_ctx_intfield(codec_ctx, 6);
+	}
+
 	public boolean sendPacket(AVPacket p) {
 		return LAVFNative.INSTANCE.avcodec_send_packet(codec_ctx, p.packet_ptr);
 	}

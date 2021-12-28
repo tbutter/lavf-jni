@@ -80,4 +80,6 @@ public class LAVFNative {
 	native long av_add_video_stream(long fmt_ctx, int codecId, int width, int height, int bitrate, int frametime, int pixfmt);
 
     native int av_open_video(long fmt_ctx, long stream);
+
+	native AVSamples copy_frame_to_samples(long frame_ptr);
 }
