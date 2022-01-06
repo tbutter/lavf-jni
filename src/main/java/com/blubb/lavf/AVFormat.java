@@ -38,6 +38,10 @@ public class AVFormat implements AutoCloseable {
 		return LAVFNative.INSTANCE.av_find_best_stream(fmt_ctx, 1);
 	}
 
+	public long getDuration() {
+		return LAVFNative.INSTANCE.av_stream_get_duration(fmt_ctx);
+	}
+
 	public boolean readPacket(AVPacket pkt) {
 		pkt.unref();
 		return LAVFNative.INSTANCE.av_read_frame(fmt_ctx, pkt.packet_ptr);

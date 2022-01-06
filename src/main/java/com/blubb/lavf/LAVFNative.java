@@ -82,4 +82,6 @@ public class LAVFNative {
     native int av_open_video(long fmt_ctx, long stream);
 
 	native AVSamples copy_frame_to_samples(long frame_ptr);
+
+	native long av_stream_get_duration(long fmt_ctx);
 }

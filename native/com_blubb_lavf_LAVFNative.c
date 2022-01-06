@@ -25,6 +25,12 @@ JNIEXPORT jlong JNICALL Java_com_blubb_lavf_LAVFNative_avformat_1open_1input(
     return (jlong)fmt_ctx;
 }
 
+JNIEXPORT jlong JNICALL Java_com_blubb_lavf_LAVFNative_av_1stream_1get_1duration
+  (JNIEnv *env, jobject obj, jlong ctx) {
+    AVFormatContext *fmt_ctx = (AVFormatContext *)ctx;
+    return (jlong)fmt_ctx->duration;
+}
+
 JNIEXPORT jlong JNICALL Java_com_blubb_lavf_LAVFNative_avformat_1allocate(
     JNIEnv *env, jobject obj, jstring format) {
     AVFormatContext *fmt_ctx;
