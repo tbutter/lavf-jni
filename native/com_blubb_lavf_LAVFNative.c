@@ -218,7 +218,7 @@ Java_com_blubb_lavf_LAVFNative_copy_1frame_1to_1samples(JNIEnv *env,
     int planes = planar ? channels : 1;
     int block_align =
         av_get_bytes_per_sample(sample_fmt) * (planar ? 1 : channels);
-    int planesize = channels * block_align * frame->nb_samples;
+    int planesize = block_align * frame->nb_samples;
     size = planesize * planes;
     jobject ret = (*env)->NewObject(env, samplesclass, cnstrctr, size,
                                     sample_fmt, channels);
