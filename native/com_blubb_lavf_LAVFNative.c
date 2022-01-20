@@ -400,7 +400,6 @@ JNIEXPORT jint JNICALL Java_com_blubb_lavf_LAVFNative_av_1open_1video(
     AVStream *st = (AVStream *)avstream;
     AVFormatContext *fmt = (AVFormatContext *)fmt_ctx;
     AVCodecContext *c = st->codec;
-    printf("XXXXXXXCCCXXXXXX3 %x", c);
 
     AVDictionary *opt = NULL;
     AVDictionary *opt_arg = NULL;
