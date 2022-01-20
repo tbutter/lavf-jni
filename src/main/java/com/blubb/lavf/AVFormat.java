@@ -47,8 +47,8 @@ public class AVFormat implements AutoCloseable {
 		return LAVFNative.INSTANCE.av_read_frame(fmt_ctx, pkt.packet_ptr);
 	}
 
-	public boolean seek(long ts) {
-		return LAVFNative.INSTANCE.av_seek_frame(fmt_ctx, ts);
+	public boolean seek(long ts, boolean backwards) {
+		return LAVFNative.INSTANCE.av_seek_frame(fmt_ctx, ts, backwards);
 	}
 
 	public long streamts_to_basets(long ts) {

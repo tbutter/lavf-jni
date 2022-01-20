@@ -314,9 +314,9 @@ JNIEXPORT jboolean JNICALL Java_com_blubb_lavf_LAVFNative_av_1read_1frame(
 }
 
 JNIEXPORT jboolean JNICALL Java_com_blubb_lavf_LAVFNative_av_1seek_1frame(
-    JNIEnv *env, jobject obj, jlong lfmt_ctx, jlong ts) {
+    JNIEnv *env, jobject obj, jlong lfmt_ctx, jlong ts, jboolean backwards) {
     AVFormatContext *fmt_ctx = (AVFormatContext *)lfmt_ctx;
-    return av_seek_frame(fmt_ctx, -1, ts, AVSEEK_FLAG_BACKWARD) >= 0;
+    return av_seek_frame(fmt_ctx, -1, ts, backwards ? AVSEEK_FLAG_BACKWARD : 0) >= 0;
 }
 
 JNIEXPORT void JNICALL Java_com_blubb_lavf_LAVFNative_av_1packet_1unref(
