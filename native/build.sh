@@ -1,7 +1,7 @@
 #!/bin/bash
 cp ../build/generated/sources/headers/java/main/com_blubb_lavf_LAVFNative.h .
 
-cd native
+#cd native
 docker build -t lavfbuild .
 CID=`docker create lavfbuild`
 docker cp $CID:/lavf/liblavf.so liblavf.so

@@ -7,7 +7,7 @@ FFMPEG_LIBS=    libavdevice                        \
                 libswscale                         \
                 libavutil                          \
 
-CFLAGS += -Wall -c -fpic -static -g -I$(shell dirname $$(dirname $$(readlink -f $$(which javac))))/include/ -I$(shell dirname $$(dirname $$(readlink -f $$(which javac))))/include/linux/ -Bsymbolic -Wl,-Bsymbolic-functions
+CFLAGS += -c -fpic -static -g -I$(shell dirname $$(dirname $$(readlink -f $$(which javac))))/include/ -I$(shell dirname $$(dirname $$(readlink -f $$(which javac))))/include/linux/ -Bsymbolic -Wl,-Bsymbolic-functions
 CFLAGS := $(shell pkg-config --static --cflags $(FFMPEG_LIBS)) $(CFLAGS)
 LDLIBS := $(shell pkg-config --static --libs $(FFMPEG_LIBS)) $(LDLIBS)
 
