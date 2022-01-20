@@ -15,6 +15,7 @@ public class AVImage {
 	public int w;
 	public int h;
 	public int pix_fmt;
+	private boolean disposed = false;
 
 	private AVImage() {
 	}
@@ -32,7 +33,13 @@ public class AVImage {
 		LAVFNative.INSTANCE.copyImageTo(this, imgto);
 	}
 
+	public void dispose() {
+		finalize();
+	}
+
 	public void finalize() {
+		if(disposed) return;
+		disposed = true;
 		LAVFNative.INSTANCE.av_free_image(buffer);
 	}
 }
