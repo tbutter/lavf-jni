@@ -2,6 +2,7 @@ package com.blubb.lavf;
 
 import java.io.File;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
@@ -84,4 +85,6 @@ public class LAVFNative {
 	native AVSamples copy_frame_to_samples(long frame_ptr);
 
 	native long av_stream_get_duration(long fmt_ctx);
+
+	native void av_free_image(ByteBuffer avImage);
 }

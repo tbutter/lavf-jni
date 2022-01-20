@@ -31,4 +31,8 @@ public class AVImage {
 	public void copyTo(AVImage imgto) {
 		LAVFNative.INSTANCE.copyImageTo(this, imgto);
 	}
+
+	public void finalize() {
+		LAVFNative.INSTANCE.av_free_image(buffer);
+	}
 }
