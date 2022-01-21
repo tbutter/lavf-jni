@@ -38,6 +38,10 @@ public class AVFormat implements AutoCloseable {
 		return LAVFNative.INSTANCE.av_find_best_stream(fmt_ctx, 1);
 	}
 
+	public double getVideoRotation(int idx) {
+		return LAVFNative.INSTANCE.av_get_video_rotation(fmt_ctx, idx);
+	}
+
 	public long getDuration() {
 		return LAVFNative.INSTANCE.av_stream_get_duration(fmt_ctx);
 	}

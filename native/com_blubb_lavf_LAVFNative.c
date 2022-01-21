@@ -25,8 +25,10 @@ JNIEXPORT jlong JNICALL Java_com_blubb_lavf_LAVFNative_avformat_1open_1input(
     return (jlong)fmt_ctx;
 }
 
-JNIEXPORT jlong JNICALL Java_com_blubb_lavf_LAVFNative_av_1stream_1get_1duration
-  (JNIEnv *env, jobject obj, jlong ctx) {
+JNIEXPORT jlong JNICALL
+Java_com_blubb_lavf_LAVFNative_av_1stream_1get_1duration(JNIEnv *env,
+                                                         jobject obj,
+                                                         jlong ctx) {
     AVFormatContext *fmt_ctx = (AVFormatContext *)ctx;
     return (jlong)fmt_ctx->duration;
 }
@@ -41,6 +43,16 @@ JNIEXPORT jlong JNICALL Java_com_blubb_lavf_LAVFNative_avformat_1allocate(
     formatstr = (*env)->GetStringUTFChars(env, format, NULL);
     ret = avformat_alloc_output_context2(&fmt_ctx, NULL, formatstr, NULL);
     return (jlong)fmt_ctx;
+}
+
+JNIEXPORT jdouble JNICALL
+Java_com_blubb_lavf_LAVFNative_av_1get_1video_1rotation(JNIEnv *env,
+                                                        jobject that, jlong ctx,
+                                                        jint idx) {
+    AVFormatContext *fmt_ctx = (AVFormatContext *)ctx;
+    int32_t *displaymatrix = (int32_t *)av_stream_get_side_data(
+        fmt_ctx->streams[idx], AV_PKT_DATA_DISPLAYMATRIX, NULL);
+    return av_display_rotation_get((int32_t *)displaymatrix);
 }
 
 JNIEXPORT jlong JNICALL Java_com_blubb_lavf_LAVFNative_streamts_1to_1basets(
@@ -109,11 +121,11 @@ JNIEXPORT jstring JNICALL Java_com_blubb_lavf_LAVFNative_avcodec_1name(
     return (*env)->NewStringUTF(env, dec_ctx->codec->name);
 }
 
-JNIEXPORT void JNICALL Java_com_blubb_lavf_LAVFNative_avcodec_1flush_1buffers
-  (JNIEnv *env, jobject obj, jlong codec_ctx) {
+JNIEXPORT void JNICALL Java_com_blubb_lavf_LAVFNative_avcodec_1flush_1buffers(
+    JNIEnv *env, jobject obj, jlong codec_ctx) {
     AVCodecContext *dec_ctx = (AVCodecContext *)codec_ctx;
     avcodec_flush_buffers(dec_ctx);
-  }
+}
 
 JNIEXPORT jint JNICALL Java_com_blubb_lavf_LAVFNative_avcodec_1ctx_1intfield(
     JNIEnv *env, jobject obj, jlong codec_ctx, jint field) {
@@ -154,11 +166,11 @@ void setIntField(JNIEnv *env, jobject obj, const char *name, jint value) {
     (*env)->SetIntField(env, obj, field, value);
 }
 
-JNIEXPORT void JNICALL Java_com_blubb_lavf_LAVFNative_av_1free_1image
-  (JNIEnv *env, jobject that, jobject buf) {
+JNIEXPORT void JNICALL Java_com_blubb_lavf_LAVFNative_av_1free_1image(
+    JNIEnv *env, jobject that, jobject buf) {
     uint8_t **video_dst_data = (*env)->GetDirectBufferAddress(env, buf);
     av_freep(&video_dst_data[0]);
-  }
+}
 
 JNIEXPORT void JNICALL Java_com_blubb_lavf_LAVFNative_av_1alloc_1image(
     JNIEnv *env, jobject that, jobject img) {
@@ -220,7 +232,8 @@ Java_com_blubb_lavf_LAVFNative_copy_1frame_1to_1samples(JNIEnv *env,
                                                         jobject obj,
                                                         jlong frame_ptr) {
     jclass samplesclass = (*env)->FindClass(env, "com/blubb/lavf/AVSamples");
-    jmethodID cnstrctr = (*env)->GetMethodID(env, samplesclass, "<init>", "(III)V");
+    jmethodID cnstrctr =
+        (*env)->GetMethodID(env, samplesclass, "<init>", "(III)V");
     AVFrame *frame = (AVFrame *)frame_ptr;
     jint size = 0;
     jint sample_fmt = frame->format;
@@ -234,8 +247,8 @@ Java_com_blubb_lavf_LAVFNative_copy_1frame_1to_1samples(JNIEnv *env,
     size = planesize * planes;
     jobject ret = (*env)->NewObject(env, samplesclass, cnstrctr, size,
                                     sample_fmt, channels);
-    jfieldID bufferid =
-        (*env)->GetFieldID(env, samplesclass, "buffer", "Ljava/nio/ByteBuffer;");
+    jfieldID bufferid = (*env)->GetFieldID(env, samplesclass, "buffer",
+                                           "Ljava/nio/ByteBuffer;");
     jobject buf = (*env)->GetObjectField(env, ret, bufferid);
     uint8_t *bufptr = (*env)->GetDirectBufferAddress(env, buf);
     for (int i = 0; i < planes; i++) {
@@ -323,7 +336,8 @@ JNIEXPORT jboolean JNICALL Java_com_blubb_lavf_LAVFNative_av_1read_1frame(
 JNIEXPORT jboolean JNICALL Java_com_blubb_lavf_LAVFNative_av_1seek_1frame(
     JNIEnv *env, jobject obj, jlong lfmt_ctx, jlong ts, jboolean backwards) {
     AVFormatContext *fmt_ctx = (AVFormatContext *)lfmt_ctx;
-    return av_seek_frame(fmt_ctx, -1, ts, backwards ? AVSEEK_FLAG_BACKWARD : 0) >= 0;
+    return av_seek_frame(fmt_ctx, -1, ts,
+                         backwards ? AVSEEK_FLAG_BACKWARD : 0) >= 0;
 }
 
 JNIEXPORT void JNICALL Java_com_blubb_lavf_LAVFNative_av_1packet_1unref(
