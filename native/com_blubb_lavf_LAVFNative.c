@@ -289,6 +289,7 @@ JNIEXPORT void JNICALL Java_com_blubb_lavf_LAVFNative_copyImageTo(JNIEnv *env,
                        SWS_FAST_BILINEAR, NULL, NULL, NULL);
     sws_scale(convertCtx, video_src_data, video_src_linesize, 0, srch,
               video_dst_data, video_dst_linesize);
+    sws_freeContext(convertCtx);
 }
 
 JNIEXPORT jlong JNICALL
