@@ -87,4 +87,6 @@ public class LAVFNative {
 	native long av_stream_get_duration(long fmt_ctx);
 
 	native void av_free_image(ByteBuffer avImage);
+
+	native void avcodec_flush_buffers(long codec_ctx);
 }

@@ -109,6 +109,12 @@ JNIEXPORT jstring JNICALL Java_com_blubb_lavf_LAVFNative_avcodec_1name(
     return (*env)->NewStringUTF(env, dec_ctx->codec->name);
 }
 
+JNIEXPORT void JNICALL Java_com_blubb_lavf_LAVFNative_avcodec_1flush_1buffers
+  (JNIEnv *env, jobject obj, jlong codec_ctx) {
+    AVCodecContext *dec_ctx = (AVCodecContext *)codec_ctx;
+    avcodec_flush_buffers(dec_ctx);
+  }
+
 JNIEXPORT jint JNICALL Java_com_blubb_lavf_LAVFNative_avcodec_1ctx_1intfield(
     JNIEnv *env, jobject obj, jlong codec_ctx, jint field) {
     AVCodecContext *dec_ctx = (AVCodecContext *)codec_ctx;

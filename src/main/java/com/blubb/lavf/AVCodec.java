@@ -19,6 +19,10 @@ public class AVCodec implements AutoCloseable {
 			throw new RuntimeException("error opening codec");
 	}
 
+	public void flushBuffers() {
+		LAVFNative.INSTANCE.avcodec_flush_buffers(codec_ctx);
+	}
+
 	public static AVCodec fromStream(AVFormat avf, int streamidx) {
 		long codec = LAVFNative.INSTANCE.avcodec_find_decoder(avf.fmt_ctx, streamidx);
 		if (codec == 0)
