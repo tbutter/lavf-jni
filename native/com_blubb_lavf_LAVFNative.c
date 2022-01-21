@@ -4,6 +4,7 @@
 #include <libavutil/imgutils.h>
 #include <libavutil/samplefmt.h>
 #include <libavutil/timestamp.h>
+#include <libavutil/display.h>
 #include <libswscale/swscale.h>
 
 JNIEXPORT jlong JNICALL Java_com_blubb_lavf_LAVFNative_avformat_1open_1input(
@@ -52,7 +53,7 @@ Java_com_blubb_lavf_LAVFNative_av_1get_1video_1rotation(JNIEnv *env,
     AVFormatContext *fmt_ctx = (AVFormatContext *)ctx;
     int32_t *displaymatrix = (int32_t *)av_stream_get_side_data(
         fmt_ctx->streams[idx], AV_PKT_DATA_DISPLAYMATRIX, NULL);
-    return av_display_rotation_get((int32_t *)displaymatrix);
+    return displaymatrix == NULL ? 0 : av_display_rotation_get((int32_t *)displaymatrix);
 }
 
 JNIEXPORT jlong JNICALL Java_com_blubb_lavf_LAVFNative_streamts_1to_1basets(
@@ -421,7 +422,6 @@ JNIEXPORT jint JNICALL Java_com_blubb_lavf_LAVFNative_av_1open_1video(
     AVStream *st = (AVStream *)avstream;
     AVFormatContext *fmt = (AVFormatContext *)fmt_ctx;
     AVCodecContext *c = st->codec;
-    printf("XXXXXXXCCCXXXXXX3 %x", c);
 
     AVDictionary *opt = NULL;
     AVDictionary *opt_arg = NULL;
