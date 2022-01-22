@@ -202,6 +202,13 @@ JNIEXPORT void JNICALL Java_com_blubb_lavf_LAVFNative_av_1alloc_1image(
     setIntField(env, img, "linesize3", video_dst_linesize[3]);
 }
 
+JNIEXPORT jlong JNICALL Java_com_blubb_lavf_LAVFNative_frame_1pts(JNIEnv *env,
+                                                                  jobject that,
+                                                                  jlong frame_ptr) {
+    AVFrame *frame = (AVFrame *)frame_ptr;
+    return frame->pts;
+  }
+
 JNIEXPORT void JNICALL Java_com_blubb_lavf_LAVFNative_copy_1frame_1to_1image(
     JNIEnv *env, jobject obj, jlong frame_ptr, jobject img) {
     AVFrame *frame = (AVFrame *)frame_ptr;

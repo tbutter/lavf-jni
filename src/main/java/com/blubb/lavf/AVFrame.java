@@ -12,6 +12,10 @@ public class AVFrame {
 		return frame;
 	}
 
+	public long getPts() {
+		return LAVFNative.INSTANCE.frame_pts(frame_ptr);
+	}
+
 	public void copyToImage(AVImage image) {
 		LAVFNative.INSTANCE.copy_frame_to_image(frame_ptr, image);
 	}

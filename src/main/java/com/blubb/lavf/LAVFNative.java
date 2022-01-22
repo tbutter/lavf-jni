@@ -91,4 +91,6 @@ public class LAVFNative {
 	native void avcodec_flush_buffers(long codec_ctx);
 
 	native double av_get_video_rotation(long fmt_ctx, int idx);
+
+	native long frame_pts(long frame_ptr);
 }
