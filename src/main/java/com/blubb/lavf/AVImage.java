@@ -43,6 +43,10 @@ public class AVImage {
 	public void finalize() {
 		if(disposed) return;
 		disposed = true;
+		if (buffer == null || buffer.capacity() == 0) {
+			System.out.println("buffer " + buffer);
+			return;
+		}
 		LAVFNative.INSTANCE.av_free_image(buffer);
 	}
 }
