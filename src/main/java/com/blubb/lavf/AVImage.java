@@ -26,6 +26,9 @@ public class AVImage {
 		img.h = h;
 		img.pix_fmt = pix_fmt;
 		LAVFNative.INSTANCE.av_alloc_image(img);
+		if (img.buffer == null) {
+			throw new RuntimeException("could not allocate image");
+		}
 		return img;
 	}
 
