@@ -169,8 +169,8 @@ void setIntField(JNIEnv *env, jobject obj, const char *name, jint value) {
 
 JNIEXPORT void JNICALL Java_com_blubb_lavf_LAVFNative_av_1free_1image(
     JNIEnv *env, jobject that, jobject buf) {
-    uint8_t **video_dst_data = (*env)->GetDirectBufferAddress(env, buf);
-    av_freep(&video_dst_data[0]);
+    uint8_t *video_dst_data = (*env)->GetDirectBufferAddress(env, buf);
+    av_freep(&video_dst_data);
 }
 
 JNIEXPORT void JNICALL Java_com_blubb_lavf_LAVFNative_av_1alloc_1image(
