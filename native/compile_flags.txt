@@ -1,0 +1,8 @@
+-Wall
+-c
+-fpic
+-static
+-g
+-Iinclude/
+-Bsymbolic
+-Wl,-Bsymbolic-functions

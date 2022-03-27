@@ -9,7 +9,7 @@ import com.blubb.lavf.AVPacket;
 public class AVFormatTest {
 	@Test
 	public void testOpen() throws Exception {
-		AVFormat avformat = new AVFormat("build/ForBiggerFun.mp4");
+		AVFormat avformat = AVFormat.openInput("build/ForBiggerFun.mp4");
 		assertEquals(1, avformat.bestAudioStream());
 		assertEquals(0, avformat.bestVideoStream());
 		avformat.close();
@@ -17,7 +17,7 @@ public class AVFormatTest {
 
 	@Test
 	public void testPackets() throws Exception {
-		AVFormat avformat = new AVFormat("build/ForBiggerFun.mp4");
+		AVFormat avformat = AVFormat.openInput("build/ForBiggerFun.mp4");
 		AVPacket p = AVPacket.allocate();
 		avformat.readPacket(p);
 		assertEquals(0, p.getStreamIdx());
