@@ -53,7 +53,7 @@ Java_com_blubb_lavf_LAVFNative_av_1get_1video_1rotation(JNIEnv *env,
     AVFormatContext *fmt_ctx = (AVFormatContext *)ctx;
     int32_t *displaymatrix = (int32_t *)av_stream_get_side_data(
         fmt_ctx->streams[idx], AV_PKT_DATA_DISPLAYMATRIX, NULL);
-    printf("displaymatrix %x\n", displaymatrix);
+    printf("displaymatrix %d %x\n", idx, displaymatrix);
     if displaymatrix != NULL) {
         printf("displaymatrix %d %d %d %d %d %d %d %d %d\n", displaymatrix[0],displaymatrix[1],displaymatrix[2],displaymatrix[3],displaymatrix[4],displaymatrix[5],displaymatrix[6],displaymatrix[7],displaymatrix[8]);
     }
