@@ -6,6 +6,7 @@
 #include <libavutil/timestamp.h>
 #include <libavutil/display.h>
 #include <libswscale/swscale.h>
+#include <libavcodec/avcodec.h>
 
 JNIEXPORT jlong JNICALL Java_com_blubb_lavf_LAVFNative_avformat_1open_1input(
     JNIEnv *env, jobject obj, jstring filename) {
@@ -146,7 +147,7 @@ JNIEXPORT jint JNICALL Java_com_blubb_lavf_LAVFNative_avcodec_1ctx_1intfield(
         case 4:
             return dec_ctx->sample_fmt;
         case 5:
-            return dec_ctx->channels;
+            return dec_ctx->ch_layout.nb_channels;
         case 6:
             return dec_ctx->sample_rate;
     }
@@ -250,7 +251,7 @@ Java_com_blubb_lavf_LAVFNative_copy_1frame_1to_1samples(JNIEnv *env,
     AVFrame *frame = (AVFrame *)frame_ptr;
     jint size = 0;
     jint sample_fmt = frame->format;
-    jint channels = frame->channels;
+    jint channels = frame->ch_layout.nb_channels;
 
     int planar = av_sample_fmt_is_planar(sample_fmt);
     int planes = planar ? channels : 1;
@@ -410,7 +411,7 @@ JNIEXPORT jlong JNICALL Java_com_blubb_lavf_LAVFNative_av_1add_1video_1stream(
         return 0;
     }
 
-    c = st->codec;
+    c = st->codecpar;
     c->codec_id = codecId;
     c->codec_type = AVMEDIA_TYPE_VIDEO;
 
@@ -433,7 +434,7 @@ JNIEXPORT jint JNICALL Java_com_blubb_lavf_LAVFNative_av_1open_1video(
     int ret;
     AVStream *st = (AVStream *)avstream;
     AVFormatContext *fmt = (AVFormatContext *)fmt_ctx;
-    AVCodecContext *c = st->codec;
+    AVCodecContext *c = st->codecpar;
 
     AVDictionary *opt = NULL;
     AVDictionary *opt_arg = NULL;

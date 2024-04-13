@@ -1,4 +1,4 @@
-FROM ghcr.io/tbutter/ffmpeg-static-docker/ffmpeg-static-dev:4.4
+FROM ghcr.io/tbutter/ffmpeg-static-docker/ffmpeg-static-dev:7.0
 
 RUN apt update && apt install -y openjdk-11-jdk
 RUN mkdir /lavf
