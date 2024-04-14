@@ -9,8 +9,9 @@ FFMPEG_LIBS=    libavdevice                        \
 
 CFLAGS += -c -fpic -static -g -I$(shell dirname $$(dirname $$(readlink -f $$(which javac))))/include/ -I$(shell dirname $$(dirname $$(readlink -f $$(which javac))))/include/linux/ -Bsymbolic -Wl,-Bsymbolic-functions
 CFLAGS := $(shell pkg-config --static --cflags $(FFMPEG_LIBS)) $(CFLAGS)
-LDLIBS := $(shell pkg-config --static --libs $(FFMPEG_LIBS)) $(LDLIBS)
+LDLIBS := $(shell pkg-config --static --libs $(FFMPEG_LIBS)) $(LDLIBS) 
 
+LDLIBS = $(echo $LDLIBS| sed -e  "s/-latomic//")
 liblavf.so: com_blubb_lavf_LAVFNative.o
 	clang -v -fpic -Wl,-Bsymbolic-functions -Wl,-Bsymbolic -shared -o liblavf.so com_blubb_lavf_LAVFNative.o $(LDLIBS) /usr/lib/gcc/x86_64-linux-gnu/9/libatomic.a -lpthread -lc
 
