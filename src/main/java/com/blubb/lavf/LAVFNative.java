@@ -2,6 +2,7 @@ package com.blubb.lavf;
 
 import java.io.File;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
@@ -29,6 +30,8 @@ public class LAVFNative {
 	// calls avformat_open_input and avformat_fin_stream_info
 	native long avformat_open_input(String filename);
 
+	native long avformat_allocate(String format);
+
 	native void avformat_close_input(long fmt_ctx);
 
 	native int av_find_best_stream(long fmt_ctx, int type);
@@ -55,6 +58,8 @@ public class LAVFNative {
 
 	native boolean av_read_frame(long fmt_ctx, long packet_ptr);
 
+	native boolean av_seek_frame(long fmt_ctx, long ts, boolean backwards);
+
 	native void av_packet_unref(long packet_ptr);
 
 	native long packet_getfield(long packet_ptr, int i);
@@ -70,4 +75,22 @@ public class LAVFNative {
 	native void copy_frame_to_image(long frame_ptr, AVImage image);
 
 	native void copyImageTo(AVImage avImage, AVImage imgto);
+
+	native long streamts_to_basets(long fmt_ctx, long ts);
+
+	native long av_add_video_stream(long fmt_ctx, int codecId, int width, int height, int bitrate, int frametime, int pixfmt);
+
+    native int av_open_video(long fmt_ctx, long stream);
+
+	native AVSamples copy_frame_to_samples(long frame_ptr);
+
+	native long av_stream_get_duration(long fmt_ctx);
+
+	native void av_free_image(ByteBuffer avImage);
+
+	native void avcodec_flush_buffers(long codec_ctx);
+
+	native double av_get_video_rotation(long fmt_ctx, int idx);
+
+	native long frame_pts(long frame_ptr);
 }

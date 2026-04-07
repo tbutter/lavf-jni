@@ -1,7 +1,7 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
 // https://github.com/microsoft/vscode-dev-containers/tree/v0.163.0/containers/java
 {
-	"name": "Java",
+	"name": "lavf-jni",
 	"build": {
 		"dockerfile": "Dockerfile",
 		"args": {
@@ -23,7 +23,8 @@
 	
 	// Add the IDs of extensions you want installed when the container is created.
 	"extensions": [
-		"vscjava.vscode-java-pack"
+		"vscjava.vscode-java-pack",
+		"redhat.java"
 	],
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
@@ -35,6 +36,6 @@
 	// Comment out connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
 	"remoteUser": "vscode",
 	"runArgs": ["--init"],
-	"mounts": [ "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind", "source=projectname-bashhistory,target=/commandhistory,type=volume" ],
+	"mounts": [ "source=/var/run/docker.sock,target=/var/run/docker-host.sock,type=bind", "source=projectname-bashhistory,target=/commandhistory,type=volume" ],
 	"overrideCommand": false
 }

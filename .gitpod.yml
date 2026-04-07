@@ -1,0 +1,8 @@
+tasks:
+- name: build
+  init: ./gradlew build
+- name: tailscaled
+  command: if [ -z "$TAILSCALE_AUTHKEY" ]; then echo "not tailscale"; else sudo tailscaled; fi 
+- name: tailscale
+  command: if [ -z "$TAILSCALE_AUTHKEY" ]; then echo "not tailscale"; else sudo -E tailscale up --hostname "gitpod-${GITPOD_WORKSPACE_ID}" --authkey "${TAILSCALE_AUTHKEY}"; fi 
+experimentalNetwork: true

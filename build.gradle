@@ -1,5 +1,6 @@
 plugins {
     id 'de.undercouch.download' version '4.1.1'
+    id("maven-publish")
 }
 apply plugin: 'maven'
 apply plugin: 'java'
@@ -15,10 +16,28 @@ dependencies {
 	testCompile group: 'org.junit.jupiter', name: 'junit-jupiter', version: '5.7.0'
 }
 
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/tbutter/lavf-jni")
+            credentials {
+        username = System.getenv("GITHUB_ACTOR")
+        password = System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+    publications {
+        gpr(MavenPublication) {
+            from(components.java)
+        }
+    }
+}
+
 test {
     useJUnitPlatform()
     testLogging {
-        events "failed"
+        events "PASSED", "SKIPPED", "FAILED", "STANDARD_OUT", "STANDARD_ERROR"
         exceptionFormat "full"
     }
 }
@@ -35,4 +54,10 @@ task verifyFile(type: Verify, dependsOn: downloadFile) {
     checksum '2ffd447ced3e0a04edcdd3975c4b638f16df2f7f'
 }
 
+task nativeBuild(type: Exec, dependsOn: compileJava) {
+    workingDir './native'
+    commandLine './build.sh'
+}
+
+processResources.dependsOn nativeBuild
 test.dependsOn verifyFile
